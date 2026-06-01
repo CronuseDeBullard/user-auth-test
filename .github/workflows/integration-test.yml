@@ -104,11 +104,155 @@ jobs:
             echo "⚠️ 未找到测试报告文件" >> $GITHUB_STEP_SUMMARY
           fi
 
+  # 教师端功能测试
+  test-teacher:
+    name: 教师端功能测试
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+      
+      - name: 设置 JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      
+      - name: 运行教师端测试
+        run: mvn test -Dtest=TeacherIntegrationTest
+      
+      - name: 上传测试报告
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: teacher-test-report
+          path: target/surefire-reports/
+          retention-days: 30
+      
+      - name: 生成测试摘要
+        if: always()
+        run: |
+          echo "## 教师端测试结果 👨‍🏫" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f target/surefire-reports/TEST-com.softwaretest.TeacherIntegrationTest.xml ]; then
+            tests=$(grep -oP 'tests="\K[^"]+' target/surefire-reports/TEST-com.softwaretest.TeacherIntegrationTest.xml | head -1)
+            failures=$(grep -oP 'failures="\K[^"]+' target/surefire-reports/TEST-com.softwaretest.TeacherIntegrationTest.xml | head -1)
+            errors=$(grep -oP 'errors="\K[^"]+' target/surefire-reports/TEST-com.softwaretest.TeacherIntegrationTest.xml | head -1)
+            echo "- 总测试数: $tests" >> $GITHUB_STEP_SUMMARY
+            echo "- 失败数: $failures" >> $GITHUB_STEP_SUMMARY
+            echo "- 错误数: $errors" >> $GITHUB_STEP_SUMMARY
+            if [ "$failures" = "0" ] && [ "$errors" = "0" ]; then
+              echo "- 状态: ✅ 全部通过" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "- 状态: ❌ 存在失败" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "⚠️ 未找到测试报告文件" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # 学生端功能测试
+  test-student:
+    name: 学生端功能测试
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+      
+      - name: 设置 JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      
+      - name: 运行学生端测试
+        run: mvn test -Dtest=StudentIntegrationTest
+      
+      - name: 上传测试报告
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: student-test-report
+          path: target/surefire-reports/
+          retention-days: 30
+      
+      - name: 生成测试摘要
+        if: always()
+        run: |
+          echo "## 学生端测试结果 👨‍🎓" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f target/surefire-reports/TEST-com.softwaretest.StudentIntegrationTest.xml ]; then
+            tests=$(grep -oP 'tests="\K[^"]+' target/surefire-reports/TEST-com.softwaretest.StudentIntegrationTest.xml | head -1)
+            failures=$(grep -oP 'failures="\K[^"]+' target/surefire-reports/TEST-com.softwaretest.StudentIntegrationTest.xml | head -1)
+            errors=$(grep -oP 'errors="\K[^"]+' target/surefire-reports/TEST-com.softwaretest.StudentIntegrationTest.xml | head -1)
+            echo "- 总测试数: $tests" >> $GITHUB_STEP_SUMMARY
+            echo "- 失败数: $failures" >> $GITHUB_STEP_SUMMARY
+            echo "- 错误数: $errors" >> $GITHUB_STEP_SUMMARY
+            if [ "$failures" = "0" ] && [ "$errors" = "0" ]; then
+              echo "- 状态: ✅ 全部通过" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "- 状态: ❌ 存在失败" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "⚠️ 未找到测试报告文件" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # 管理员端功能测试
+  test-admin:
+    name: 管理员端功能测试
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+      
+      - name: 设置 JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      
+      - name: 运行管理员端测试
+        run: mvn test -Dtest=AdminIntegrationTest
+      
+      - name: 上传测试报告
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: admin-test-report
+          path: target/surefire-reports/
+          retention-days: 30
+      
+      - name: 生成测试摘要
+        if: always()
+        run: |
+          echo "## 管理员端测试结果 👨‍💼" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f target/surefire-reports/TEST-com.softwaretest.AdminIntegrationTest.xml ]; then
+            tests=$(grep -oP 'tests="\K[^"]+' target/surefire-reports/TEST-com.softwaretest.AdminIntegrationTest.xml | head -1)
+            failures=$(grep -oP 'failures="\K[^"]+' target/surefire-reports/TEST-com.softwaretest.AdminIntegrationTest.xml | head -1)
+            errors=$(grep -oP 'errors="\K[^"]+' target/surefire-reports/TEST-com.softwaretest.AdminIntegrationTest.xml | head -1)
+            echo "- 总测试数: $tests" >> $GITHUB_STEP_SUMMARY
+            echo "- 失败数: $failures" >> $GITHUB_STEP_SUMMARY
+            echo "- 错误数: $errors" >> $GITHUB_STEP_SUMMARY
+            if [ "$failures" = "0" ] && [ "$errors" = "0" ]; then
+              echo "- 状态: ✅ 全部通过" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "- 状态: ❌ 存在失败" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "⚠️ 未找到测试报告文件" >> $GITHUB_STEP_SUMMARY
+          fi
+
   # 完整测试套件
   test-all:
     name: 完整测试套件
     runs-on: ubuntu-latest
-    needs: [test-user-registration, test-user-login]
+    needs: [test-user-registration, test-user-login, test-teacher, test-student, test-admin]
     
     steps:
       - name: 检出代码
@@ -174,12 +318,15 @@ jobs:
           echo "|---------|--------|------|" >> $GITHUB_STEP_SUMMARY
           echo "| 用户注册功能 | 9 | ✅ |" >> $GITHUB_STEP_SUMMARY
           echo "| 用户登录功能 | 6 | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| 教师端功能 | 6 | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| 学生端功能 | 6 | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| 管理员端功能 | 6 | ✅ |" >> $GITHUB_STEP_SUMMARY
 
   # 测试结果汇总
   test-summary:
     name: 测试结果汇总
     runs-on: ubuntu-latest
-    needs: [test-user-registration, test-user-login, test-all]
+    needs: [test-user-registration, test-user-login, test-teacher, test-student, test-admin, test-all]
     if: always()
     
     steps:
@@ -203,6 +350,9 @@ jobs:
           echo "|---------|------|" >> $GITHUB_STEP_SUMMARY
           echo "| 用户注册功能测试 | ${{ needs.test-user-registration.result == 'success' && '✅ 成功' || '❌ 失败' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| 用户登录功能测试 | ${{ needs.test-user-login.result == 'success' && '✅ 成功' || '❌ 失败' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 教师端功能测试 | ${{ needs.test-teacher.result == 'success' && '✅ 成功' || '❌ 失败' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 学生端功能测试 | ${{ needs.test-student.result == 'success' && '✅ 成功' || '❌ 失败' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 管理员端功能测试 | ${{ needs.test-admin.result == 'success' && '✅ 成功' || '❌ 失败' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| 完整测试套件 | ${{ needs.test-all.result == 'success' && '✅ 成功' || '❌ 失败' }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "---" >> $GITHUB_STEP_SUMMARY

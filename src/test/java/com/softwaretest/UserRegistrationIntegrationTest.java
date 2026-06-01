@@ -1,6 +1,7 @@
 package com.softwaretest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.softwaretest.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +26,7 @@ import java.util.Map;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@Transactional
 @DisplayName("用户注册功能集成测试")
 public class UserRegistrationIntegrationTest {
 
@@ -32,6 +35,9 @@ public class UserRegistrationIntegrationTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+    
+    @Autowired
+    private UserRepository userRepository;
 
     private String buildRegisterJson(String username, String password, String phone, String email) throws Exception {
         Map<String, String> registerData = new HashMap<>();
@@ -45,6 +51,7 @@ public class UserRegistrationIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        userRepository.deleteAll();
         System.out.println("========================================");
         System.out.println("开始执行用户注册功能集成测试");
         System.out.println("========================================");

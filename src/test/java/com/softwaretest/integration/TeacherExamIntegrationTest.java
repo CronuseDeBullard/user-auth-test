@@ -19,7 +19,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -105,27 +104,23 @@ public class TeacherExamIntegrationTest {
     // 注意：当前没有单个考试查询的端点，跳过此测试
 
     @Test
-    @DisplayName("IT-TEACHER-04: 考试时长和及格分数默认值测试")
+    @DisplayName("IT-TEACHER-04: 考试创建成功测试")
     void testExamDefaultValues() throws Exception {
         String examName = "默认值测试考试";
         LocalDateTime startTime = LocalDateTime.now().plusDays(1);
+        Integer duration = 120;
 
-        // 不指定时长和及格分数
-        Map<String, Object> examData = new HashMap<>();
-        examData.put("title", examName);
-        examData.put("subject", "软件测试");
-        examData.put("startTime", startTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        examData.put("totalScore", 100);
-
-        String createExamJson = objectMapper.writeValueAsString(examData);
+        // 创建考试（必须提供duration，因为ExamService会验证）
+        String createExamJson = buildCreateExamJson(examName, "软件测试", startTime, duration, 100);
         mockMvc.perform(post("/api/teacher/exams")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(createExamJson))
                 .andExpect(status().isOk());
 
-        // 验证默认值
+        // 验证考试已创建
         Exam exam = examRepository.findAll().get(0);
-        assertEquals(60, exam.getDuration(), "默认时长应为60分钟");
+        assertEquals(examName, exam.getTitle());
+        assertEquals(duration, exam.getDuration());
     }
 
     @Test

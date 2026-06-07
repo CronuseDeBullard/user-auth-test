@@ -199,7 +199,11 @@ public class TeacherExamIntegrationTest {
         data.put("title", title);
         data.put("subject", subject);
         if (startTime != null) {
-            data.put("startTime", startTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            data.put("startTime", startTime);
+            // 计算结束时间
+            if (duration != null) {
+                data.put("endTime", startTime.plusMinutes(duration));
+            }
         }
         data.put("duration", duration);
         data.put("totalScore", totalScore);

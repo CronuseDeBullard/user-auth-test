@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -129,8 +130,9 @@ public class UserAuthenticationIntegrationTest {
     @Test
     @DisplayName("IT-AUTH-04: 用户名去除空格测试")
     void testUsernameTrimsSpaces() throws Exception {
+        // 使用符合长度要求的用户名（去空格后至少6位）
         String username = "  testuser002  ";
-        String trimmedUsername = "testuser002";
+        String trimmedUsername = "testuser002"; // 11位，符合6-24位要求
         
         String registerJson = buildRegisterJson(username, "password123", "13800138002", "test002@test.com");
         mockMvc.perform(post("/api/register")
@@ -138,7 +140,10 @@ public class UserAuthenticationIntegrationTest {
                         .content(registerJson))
                 .andExpect(status().isOk());
 
-        // 使用去除空格后的用户名登录
+        // 验证数据库中用户名已去除空格
+        assertTrue(userRepository.existsByUsername(trimmedUsername));
+
+        // 使用去除空格后的用户名登录应该成功
         String loginJson = buildLoginJson(trimmedUsername, "password123");
         mockMvc.perform(post("/api/login")
                         .contentType(MediaType.APPLICATION_JSON)

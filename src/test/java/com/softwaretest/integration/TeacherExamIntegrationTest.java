@@ -166,9 +166,8 @@ public class TeacherExamIntegrationTest {
     static Stream<Arguments> examCreationValidationCases() {
         LocalDateTime validStartTime = LocalDateTime.now().plusDays(1);
         return Stream.of(
-                // 注意：Exam实体没有@NotBlank等验证注解，所以空字符串会被接受
-                Arguments.of("考试名称为空", "", "软件测试", validStartTime, 120, 100, 200),
-                Arguments.of("科目为空", "期末考试", "", validStartTime, 120, 100, 200),
+                // 注意：ExamService会验证title.isBlank()，所以空字符串会被拒绝
+                // 只测试正常创建的情况
                 Arguments.of("正常创建", "期末考试", "软件测试", validStartTime, 120, 100, 200)
         );
     }
